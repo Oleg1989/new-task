@@ -1,4 +1,5 @@
 import { ArrayStrings } from "./interfaceArrayStrings";
+import { ArraySumValue } from "./interfaceArraySumValue";
 
 export interface MatrixState {
     M: number;
@@ -9,7 +10,7 @@ export interface MatrixState {
     statusX: 'idle' | 'loading' | 'failed';
     arrayValue: ArrayStrings[];
     statusArrayValue: 'idle' | 'loading' | 'failed';
-    arraySum: number[];
+    arraySum: ArraySumValue[];
     statusArraySum: 'idle' | 'loading' | 'failed';
     arrayAverage: number[];
     statusArrayAverage: 'idle' | 'loading' | 'failed';

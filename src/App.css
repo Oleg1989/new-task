@@ -14,12 +14,6 @@ caption {
   color: #009688;
   margin: 1rem;
 }
-td:last-child:hover{
-  border: 1px solid #ff6d00;
-  border-radius: 5px;
-  background-color: #00c853;
-  cursor: pointer;
-}
 td {
   border: 1px solid #ff6d00;
   border-radius: 5px;
@@ -29,4 +23,13 @@ td:hover {
   border-radius: 5px;
   background-color: #ffd180;
   cursor: pointer;
+}
+.td-sum {
+  background-color: #29b6f6 ;
+}
+.td-average {
+  background-color: #00e676;
+}
+.delete-button {
+  background-color: #ff5722;
 }
