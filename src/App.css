@@ -14,6 +14,12 @@ caption {
   color: #009688;
   margin: 1rem;
 }
+h1{
+  font-size: 2rem;
+  font-weight: bolder;
+  color: #009688;
+  margin: 1rem;
+}
 td {
   border: 1px solid #ff6d00;
   border-radius: 5px;

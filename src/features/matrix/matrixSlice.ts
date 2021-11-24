@@ -2,19 +2,18 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
 import cuid from 'cuid';
 
-import { fetchMatrix } from './matrixAPI';
 import { MatrixState } from '../../app/interface/interfaceMatrixState';
-import { ArrayStrings } from '../../app/interface/interfaceArrayStrings';
-import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
+//import { ArrayStrings } from '../../app/interface/interfaceArrayStrings';
+//import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
 import { Value } from '../../app/interface/interfaceValue';
 import { Params } from '../../app/interface/interfaceParams';
 
 const initialState: MatrixState = {
-  M: 5,
+  M: 0,
   statusM: 'idle',
-  N: 5,
+  N: 0,
   statusN: 'idle',
-  X: 2,
+  X: 0,
   statusX: 'idle',
   arrayValue: [],
   statusArrayValue: 'idle',
@@ -24,21 +23,9 @@ const initialState: MatrixState = {
   statusArrayAverage: 'idle',
   arrayInterest: [],
   statusArrayInterest: 'idle',
+  arrayOfNearestNumbers: [],
+  statusArrayOfNearestNumbers: 'idle',
 };
-
-// The function below is called a thunk and allows us to perform async logic. It
-// can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
-// will call the thunk with the `dispatch` function as the first argument. Async
-// code can then be executed and other actions can be dispatched. Thunks are
-// typically used to make async requests.
-// export const incrementAsync = createAsyncThunk(
-//   'matrix/fetchMatrix',
-//   async (amount: number) => {
-//     const response = await fetchMatrix(amount);
-//     // The value we return becomes the `fulfilled` action payload
-//     return response.data;
-//   }
-// );
 
 export const matrixSlice = createSlice({
   name: 'matrix',
@@ -53,6 +40,7 @@ export const matrixSlice = createSlice({
           }
         });
       });
+
       state.arrayValue.forEach(str => {
         str.string.forEach(val => {
           if (action.payload === val.id) {
@@ -64,6 +52,7 @@ export const matrixSlice = createSlice({
           }
         });
       });
+
       let arr: number[] = [];
       state.arrayValue.forEach((str, index) => {
         if (index === 0) {
@@ -77,13 +66,17 @@ export const matrixSlice = createSlice({
         }
       });
       arr.forEach((val, index) => {
-        state.arrayAverage[index] = val / state.N;
+        state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
       });
     },
     initializeParameters: (state, action: PayloadAction<Params>) => {
       state.M = action.payload.M;
       state.N = action.payload.N;
       state.X = action.payload.X;
+
+      state.arrayValue.length = 0;
+      state.arrayAverage.length = 0;
+      state.arraySum.length = 0;
 
       for (let i = 0; i < state.M; i++) {
         let arrayAmount: Value[] = [];
@@ -121,13 +114,162 @@ export const matrixSlice = createSlice({
         }
       });
       arr.forEach(val => {
-        state.arrayAverage.push(val / state.N);
+        state.arrayAverage.push(parseFloat((val / state.M).toFixed(1)));
       });
     },
     deleteStr: (state, action: PayloadAction<string>) => {
       state.arrayValue = [...state.arrayValue.filter(str => str.id !== action.payload)];
       state.M = state.M - 1;
-      state.arrayAverage.length = 0;
+
+      let arr: number[] = [];
+      state.arrayValue.forEach((str, index) => {
+        if (index === 0) {
+          str.string.forEach((val, i) => {
+            arr[i] = val.amount;
+          });
+        } else {
+          str.string.forEach((val, i) => {
+            arr[i] += val.amount;
+          });
+        }
+      });
+      arr.forEach((val, index) => {
+        state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
+      });
+    },
+    addStr: (state) => {
+      state.M = state.M + 1;
+
+      let newString: Value[] = [];
+      for (let i = 0; i < state.N; i++) {
+        newString.push({
+          id: cuid(),
+          amount: Math.floor(Math.random() * (999 - 100 + 1)) + 100,
+        });
+      }
+      state.arrayValue.unshift({
+        id: cuid(),
+        string: newString,
+      });
+
+      state.arraySum.length = 0;
+      state.arrayValue.forEach(str => {
+        let sum: number = 0;
+        str.string.forEach(val => { sum += val.amount });
+        state.arraySum.unshift({
+          id: str.id,
+          amount: sum
+        });
+      });
+
+      let arr: number[] = [];
+      state.arrayValue.forEach((str, index) => {
+        if (index === 0) {
+          str.string.forEach((val, i) => {
+            arr[i] = val.amount;
+          });
+        } else {
+          str.string.forEach((val, i) => {
+            arr[i] += val.amount;
+          });
+        }
+      });
+      arr.forEach((val, index) => {
+        state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
+      });
+    },
+    findClosestValues: (state, action: PayloadAction<string>) => {
+      state.arrayOfNearestNumbers.length = 0;
+
+      let number!: Value;
+      state.arrayValue.forEach(str => {
+        str.string.forEach(val => {
+          if (val.id === action.payload) {
+            number = { ...val };
+          }
+        });
+      });
+      console.log(number);
+      if (number) {
+        let newArrayValue: Value[] = [];
+        state.arrayValue.forEach(str => {
+          str.string.forEach(val => {
+            newArrayValue.push(val);
+          });
+        });
+
+        newArrayValue.sort((a: Value, b: Value): number => {
+          if (a.amount > b.amount) return 1;
+          if (a.amount < b.amount) return -1;
+          return 0;
+        });
+
+        let arraySmallerNumbers: Value[] = [];
+        let arrayLargerNumbers: Value[] = [];
+        let arrayDuplicate: Value[] = [];
+
+        newArrayValue.forEach(val => {
+          if (number.amount === val.amount && arrayDuplicate.length <= state.X && number.id !== val.id) {
+            arrayDuplicate.push(val);
+          }
+          if ((number.amount > val.amount) && (arraySmallerNumbers.length < state.X)) {
+            arraySmallerNumbers.push(val);
+          }
+          if ((number.amount > val.amount) && (arraySmallerNumbers.length === state.X)) {
+            newArrayValue.forEach(num => {
+              if (num.amount < val.amount) {
+                num = { ...val };
+              }
+            });
+          }
+          if (number.amount < val.amount && arrayLargerNumbers.length <= state.X) {
+            if (arrayLargerNumbers.length < state.X) {
+              arrayLargerNumbers.push(val);
+            }
+          }
+        });
+
+        // arraySmallerNumbers.forEach(val => console.log(val.amount));
+        // arrayLargerNumbers.forEach(val => console.log(val.amount));
+        // arrayDuplicate.forEach(val => console.log(val.amount));
+        arraySmallerNumbers.reverse();
+        //arraySmallerNumbers.forEach(val => console.log(val.amount));
+        //arrayLargerNumbers.forEach(val => console.log(val.amount));
+
+
+        let arrayNumbers: Value[] = [];
+        if (arrayDuplicate.length) {
+          arrayNumbers = arrayDuplicate.map(val => val);
+        }
+
+        //arrayNumbers.forEach(val => console.log(val.amount));
+
+        if (arrayNumbers.length < state.X) {
+          for (let i = 0; i < arrayLargerNumbers.length || arraySmallerNumbers.length; i++) {
+            if (arrayLargerNumbers[i].amount - number.amount === number.amount - arraySmallerNumbers[i].amount) {
+              arrayNumbers.push(arrayLargerNumbers[i]);
+              if (arrayNumbers.length < state.X) {
+                arrayNumbers.push(arraySmallerNumbers[i]);
+              }
+            }
+            if (arrayLargerNumbers[i].amount - number.amount > number.amount - arraySmallerNumbers[i].amount) {
+              if (arrayNumbers.length < state.X) {
+                arrayNumbers.push(arraySmallerNumbers[i]);
+              }
+            }
+            if (arrayLargerNumbers[i].amount - number.amount < number.amount - arraySmallerNumbers[i].amount) {
+              if (arrayNumbers.length < state.X) {
+                arrayNumbers.push(arrayLargerNumbers[i]);
+              }
+            }
+          }
+        }
+
+        arrayNumbers.forEach(val => console.log(val.amount));
+        state.arrayOfNearestNumbers = [...arrayNumbers];
+
+      }
+
     }
 
   },
@@ -145,7 +287,7 @@ export const matrixSlice = createSlice({
   // },
 });
 
-export const { increment, initializeParameters, deleteStr } = matrixSlice.actions;
+export const { increment, initializeParameters, deleteStr, addStr, findClosestValues } = matrixSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

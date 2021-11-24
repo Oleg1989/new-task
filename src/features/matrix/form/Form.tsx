@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import cuid from 'cuid';
+import React, { useState } from 'react';
+import { useAppDispatch } from '../../../app/hooks';
+
 
 import { initializeParameters } from '../matrixSlice';
-import { Params } from '../../../app/interface/interfaceParams'
 
 
 export function Form() {

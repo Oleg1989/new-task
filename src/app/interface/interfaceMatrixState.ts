@@ -1,5 +1,6 @@
 import { ArrayStrings } from "./interfaceArrayStrings";
 import { ArraySumValue } from "./interfaceArraySumValue";
+import { Value } from "./interfaceValue";
 
 export interface MatrixState {
     M: number;
@@ -16,4 +17,6 @@ export interface MatrixState {
     statusArrayAverage: 'idle' | 'loading' | 'failed';
     arrayInterest: number[];
     statusArrayInterest: 'idle' | 'loading' | 'failed';
+    arrayOfNearestNumbers: Value[];
+    statusArrayOfNearestNumbers: 'idle' | 'loading' | 'failed';
 }
