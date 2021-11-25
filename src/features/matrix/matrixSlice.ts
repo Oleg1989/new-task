@@ -21,8 +21,8 @@ const initialState: MatrixState = {
   statusArraySum: 'idle',
   arrayAverage: [],
   statusArrayAverage: 'idle',
-  arrayInterest: [],
-  statusArrayInterest: 'idle',
+  arrayOfPercentagesOfNumbers: { id: '', string: [] },
+  statusArrayOfPercentagesOfNumbers: 'idle',
   arrayOfNearestNumbers: [],
   statusArrayOfNearestNumbers: 'idle',
 };
@@ -189,7 +189,7 @@ export const matrixSlice = createSlice({
           }
         });
       });
-      console.log(number);
+      //console.log(number);
       if (number) {
         let newArrayValue: Value[] = [];
         state.arrayValue.forEach(str => {
@@ -212,16 +212,17 @@ export const matrixSlice = createSlice({
           if (number.amount === val.amount && arrayDuplicate.length <= state.X && number.id !== val.id) {
             arrayDuplicate.push(val);
           }
-          if ((number.amount > val.amount) && (arraySmallerNumbers.length < state.X)) {
+          if ((number.amount > val.amount)) {
             arraySmallerNumbers.push(val);
           }
-          if ((number.amount > val.amount) && (arraySmallerNumbers.length === state.X)) {
-            newArrayValue.forEach(num => {
-              if (num.amount < val.amount) {
-                num = { ...val };
-              }
-            });
-          }
+          // if ((number.amount > val.amount) && (arraySmallerNumbers.length === state.X)) {
+          //   arraySmallerNumbers.map(num => {
+          //     if (num.amount < val.amount) {
+          //       console.log("Ok");
+          //       return num = { ...val };
+          //     }
+          //   });
+          // }
           if (number.amount < val.amount && arrayLargerNumbers.length <= state.X) {
             if (arrayLargerNumbers.length < state.X) {
               arrayLargerNumbers.push(val);
@@ -233,8 +234,9 @@ export const matrixSlice = createSlice({
         // arrayLargerNumbers.forEach(val => console.log(val.amount));
         // arrayDuplicate.forEach(val => console.log(val.amount));
         arraySmallerNumbers.reverse();
-        //arraySmallerNumbers.forEach(val => console.log(val.amount));
-        //arrayLargerNumbers.forEach(val => console.log(val.amount));
+        arraySmallerNumbers = arraySmallerNumbers.slice(0, state.X);
+        // arraySmallerNumbers.forEach(val => console.log(val.amount));
+        // arrayLargerNumbers.forEach(val => console.log(val.amount));
 
 
         let arrayNumbers: Value[] = [];
@@ -245,31 +247,54 @@ export const matrixSlice = createSlice({
         //arrayNumbers.forEach(val => console.log(val.amount));
 
         if (arrayNumbers.length < state.X) {
-          for (let i = 0; i < arrayLargerNumbers.length || arraySmallerNumbers.length; i++) {
-            if (arrayLargerNumbers[i].amount - number.amount === number.amount - arraySmallerNumbers[i].amount) {
-              arrayNumbers.push(arrayLargerNumbers[i]);
-              if (arrayNumbers.length < state.X) {
-                arrayNumbers.push(arraySmallerNumbers[i]);
-              }
-            }
-            if (arrayLargerNumbers[i].amount - number.amount > number.amount - arraySmallerNumbers[i].amount) {
-              if (arrayNumbers.length < state.X) {
-                arrayNumbers.push(arraySmallerNumbers[i]);
-              }
-            }
-            if (arrayLargerNumbers[i].amount - number.amount < number.amount - arraySmallerNumbers[i].amount) {
-              if (arrayNumbers.length < state.X) {
+          for (let i = 0; i < state.X; i++) {
+            if (arrayLargerNumbers.length > i && arraySmallerNumbers.length > i) {
+              if (arrayLargerNumbers[i].amount - number.amount === number.amount - arraySmallerNumbers[i].amount) {
                 arrayNumbers.push(arrayLargerNumbers[i]);
+                if (arrayNumbers.length < state.X) {
+                  arrayNumbers.push(arraySmallerNumbers[i]);
+                }
+              }
+              if (arrayLargerNumbers[i].amount - number.amount > number.amount - arraySmallerNumbers[i].amount) {
+                if (arrayNumbers.length < state.X) {
+                  arrayNumbers.push(arraySmallerNumbers[i]);
+                }
+              }
+              if (arrayLargerNumbers[i].amount - number.amount < number.amount - arraySmallerNumbers[i].amount) {
+                if (arrayNumbers.length < state.X) {
+                  arrayNumbers.push(arrayLargerNumbers[i]);
+                }
               }
             }
           }
         }
 
-        arrayNumbers.forEach(val => console.log(val.amount));
+        //arrayNumbers.forEach(val => console.log(val.amount));
         state.arrayOfNearestNumbers = [...arrayNumbers];
 
       }
 
+    },
+    getThePercentagesOfStringNumbers: (state, action: PayloadAction<string>) => {
+      const sumStr = state.arraySum.find(str => str.id === action.payload);
+      state.arrayOfPercentagesOfNumbers = { id: '', string: [] };
+
+      state.arrayValue.forEach(str => {
+        if (str.id === action.payload) {
+          state.arrayOfPercentagesOfNumbers.id = action.payload;
+          str.string.forEach(val => {
+            state.arrayOfPercentagesOfNumbers.string.push(
+              {
+                id: val.id,
+                amount: Math.round(val.amount * 100 / sumStr?.amount!),
+              }
+            );
+          });
+        }
+      });
+    },
+    reseteThePercentagesOfStringNumbers: (state) => {
+      state.arrayOfPercentagesOfNumbers = { id: '', string: [] };
     }
 
   },
@@ -287,7 +312,15 @@ export const matrixSlice = createSlice({
   // },
 });
 
-export const { increment, initializeParameters, deleteStr, addStr, findClosestValues } = matrixSlice.actions;
+export const {
+  increment,
+  initializeParameters,
+  deleteStr,
+  addStr,
+  findClosestValues,
+  getThePercentagesOfStringNumbers,
+  reseteThePercentagesOfStringNumbers
+} = matrixSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -300,5 +333,7 @@ export const selectX = (state: RootState) => state.matrix.X;
 export const selectArrayValue = (state: RootState) => state.matrix.arrayValue;
 export const selectArraySum = (state: RootState) => state.matrix.arraySum;
 export const selectArrayAverage = (state: RootState) => state.matrix.arrayAverage;
+export const selectArrayOfNearestNumbers = (state: RootState) => state.matrix.arrayOfNearestNumbers;
+export const selectArrayOfPercentagesOfNumbers = (state: RootState) => state.matrix.arrayOfPercentagesOfNumbers;
 
 export default matrixSlice.reducer;

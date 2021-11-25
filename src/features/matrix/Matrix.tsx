@@ -11,10 +11,14 @@ import {
   selectArrayValue,
   selectArraySum,
   selectArrayAverage,
+  selectArrayOfNearestNumbers,
+  selectArrayOfPercentagesOfNumbers,
   increment,
   deleteStr,
   addStr,
-  findClosestValues
+  findClosestValues,
+  getThePercentagesOfStringNumbers,
+  reseteThePercentagesOfStringNumbers
 } from './matrixSlice';
 // import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
 import { Form } from '../../features/matrix/form/Form';
@@ -27,6 +31,9 @@ export function Matrix() {
   const arrayValue = useAppSelector(selectArrayValue);
   const arraySum = useAppSelector(selectArraySum);
   const arrayAverage = useAppSelector(selectArrayAverage);
+  const arrayOfNearestNumbers = useAppSelector(selectArrayOfNearestNumbers);
+  const arrayOfPercentagesOfNumbers = useAppSelector(selectArrayOfPercentagesOfNumbers);
+
   const dispatch = useAppDispatch();
   // const [arrayStrings, setArrayStrings] = useState<ArrayStrings[]>([]);
   // const [arrayValue, setArrayValue] = useState<Value[]>([]);
@@ -48,10 +55,21 @@ export function Matrix() {
     dispatch(addStr());
   }
 
-  const showNambers: React.MouseEventHandler<HTMLElement> = (event) => {
+  const showNearestNumbers: React.MouseEventHandler<HTMLElement> = (event) => {
     if ((event.target as HTMLElement).id) {
       dispatch(findClosestValues((event.target as HTMLElement).id))
     }
+  }
+
+  const showPercentagesOfNumbers: React.MouseEventHandler<HTMLElement> = (event) => {
+    if ((event.target as HTMLElement).id) {
+      dispatch(getThePercentagesOfStringNumbers((event.target as HTMLElement).id));
+    }
+  }
+
+  const hidePercentagesOfNumbers: React.MouseEventHandler<HTMLElement> = (event) => {
+    console.log(event);
+    dispatch(reseteThePercentagesOfStringNumbers());
   }
 
   return (
@@ -67,28 +85,43 @@ export function Matrix() {
             <tbody onClick={(event) => {
               clikValue(event);
             }}
-              onMouseOver={showNambers}
+              onMouseOver={showNearestNumbers}
             >
               {arrayValue.map((str, index) => {
                 if (index === M - 1) {
                   return (
                     <>
-                      <tr key={str.id}>
+                      <tr
+                        key={str.id}
+                      >
                         {str.string.map((val, index) => {
                           if (index === N - 1) {
                             return (
                               <>
-                                <td id={val.id} key={val.id}>
-                                  {val.amount}
+                                <td
+                                  id={val.id}
+                                  key={val.id}
+                                  className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
+                                  {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                                 </td>
                                 {arraySum.map(val => {
                                   if (val.id === str.id) {
                                     return (
                                       <>
-                                        <td id={str.id} key={cuid()} className="td-sum">
+                                        <td
+                                          id={str.id}
+                                          key={cuid()}
+                                          className="td-sum"
+                                          onMouseOver={showPercentagesOfNumbers}
+                                          onMouseOut={hidePercentagesOfNumbers}
+                                        >
                                           {val.amount}
                                         </td>
-                                        <td key={cuid()} data-deleteid={str.id} className="delete-button" onClick={deleteString}>
+                                        <td
+                                          key={cuid()}
+                                          data-deleteid={str.id}
+                                          className="delete-button"
+                                          onClick={deleteString}>
                                           Delete
                                         </td>
                                       </>
@@ -100,17 +133,23 @@ export function Matrix() {
                             );
                           } else {
                             return (
-                              <td id={val.id} key={val.id}>
-                                {val.amount}
+                              <td
+                                id={val.id}
+                                key={val.id}
+                                className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
+                                {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                               </td>
                             );
                           }
                         })}
                       </tr>
-                      <tr key={cuid()}>
+                      <tr
+                        key={cuid()}>
                         {arrayAverage.map(val => {
                           return (
-                            <td key={cuid()} className="td-average">
+                            <td
+                              key={cuid()}
+                              className="td-average">
                               {val}
                             </td>
                           );
@@ -120,22 +159,36 @@ export function Matrix() {
                   );
                 } else {
                   return (
-                    <tr key={str.id}>
+                    <tr
+                      key={str.id}
+                    >
                       {str.string.map((val, index) => {
                         if (index === N - 1) {
                           return (
                             <>
-                              <td id={val.id} key={val.id}>
-                                {val.amount}
+                              <td
+                                id={val.id}
+                                key={val.id}
+                                className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
+                                {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                               </td>
                               {arraySum.map(val => {
                                 if (val.id === str.id) {
                                   return (
                                     <>
-                                      <td id={str.id} key={cuid()} className="td-sum">
+                                      <td
+                                        id={str.id}
+                                        key={cuid()}
+                                        className="td-sum"
+                                        onMouseOver={showPercentagesOfNumbers}
+                                        onMouseOut={hidePercentagesOfNumbers}
+                                      >
                                         {val.amount}
                                       </td>
-                                      <td key={cuid()} data-deleteid={str.id} className="delete-button" onClick={deleteString}>
+                                      <td
+                                        key={cuid()}
+                                        data-deleteid={str.id}
+                                        className="delete-button" onClick={deleteString}>
                                         Delete
                                       </td>
                                     </>
@@ -147,8 +200,11 @@ export function Matrix() {
                           );
                         } else {
                           return (
-                            <td id={val.id} key={val.id}>
-                              {val.amount}
+                            <td
+                              id={val.id}
+                              key={val.id}
+                              className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
+                              {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                             </td>
                           );
                         }
