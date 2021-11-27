@@ -18,7 +18,8 @@ import {
   addStr,
   findClosestValues,
   getThePercentagesOfStringNumbers,
-  reseteThePercentagesOfStringNumbers
+  reseteThePercentagesOfStringNumbers,
+  reseteArrayOfNearestNumbers
 } from './matrixSlice';
 // import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
 import { Form } from '../../features/matrix/form/Form';
@@ -43,6 +44,9 @@ export function Matrix() {
     if ((event.target as HTMLElement).id) {
       dispatch(increment((event.target as HTMLElement).id));
     }
+    if ((event.target as HTMLElement).parentElement?.id) {
+      dispatch(increment((event.target as HTMLElement).parentElement?.id!));
+    }
   }
 
   const deleteString: React.MouseEventHandler<HTMLElement> = (event) => {
@@ -59,6 +63,13 @@ export function Matrix() {
     if ((event.target as HTMLElement).id) {
       dispatch(findClosestValues((event.target as HTMLElement).id))
     }
+    if ((event.target as HTMLElement).parentElement?.id) {
+      dispatch(findClosestValues((event.target as HTMLElement).parentElement?.id!))
+    }
+  }
+
+  const hideNearestNumbers = () => {
+    dispatch(reseteArrayOfNearestNumbers());
   }
 
   const showPercentagesOfNumbers: React.MouseEventHandler<HTMLElement> = (event) => {
@@ -67,8 +78,7 @@ export function Matrix() {
     }
   }
 
-  const hidePercentagesOfNumbers: React.MouseEventHandler<HTMLElement> = (event) => {
-    console.log(event);
+  const hidePercentagesOfNumbers = () => {
     dispatch(reseteThePercentagesOfStringNumbers());
   }
 
@@ -86,6 +96,7 @@ export function Matrix() {
               clikValue(event);
             }}
               onMouseOver={showNearestNumbers}
+              onMouseLeave={hideNearestNumbers}
             >
               {arrayValue.map((str, index) => {
                 if (index === M - 1) {
@@ -102,7 +113,13 @@ export function Matrix() {
                                   id={val.id}
                                   key={val.id}
                                   className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
-                                  {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                  <div
+                                    style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
+                                      backgroundColor: "#18ffff", padding: "5px", borderRadius: "5px 0 0 5px", width: `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%`
+                                    } : { padding: "5px" }}
+                                  >
+                                    {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                  </div>
                                 </td>
                                 {arraySum.map(val => {
                                   if (val.id === str.id) {
@@ -112,8 +129,8 @@ export function Matrix() {
                                           id={str.id}
                                           key={cuid()}
                                           className="td-sum"
-                                          onMouseOver={showPercentagesOfNumbers}
-                                          onMouseOut={hidePercentagesOfNumbers}
+                                          onMouseEnter={showPercentagesOfNumbers}
+                                          onMouseLeave={hidePercentagesOfNumbers}
                                         >
                                           {val.amount}
                                         </td>
@@ -137,7 +154,13 @@ export function Matrix() {
                                 id={val.id}
                                 key={val.id}
                                 className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
-                                {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                <div
+                                  style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
+                                    backgroundColor: "#18ffff", padding: "5px", borderRadius: "5px 0 0 5px", width: `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%`
+                                  } : { padding: "5px" }}
+                                >
+                                  {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                </div>
                               </td>
                             );
                           }
@@ -170,7 +193,13 @@ export function Matrix() {
                                 id={val.id}
                                 key={val.id}
                                 className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
-                                {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                <div
+                                  style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
+                                    backgroundColor: "#18ffff", padding: "5px", borderRadius: "5px 0 0 5px", width: `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%`
+                                  } : { padding: "5px" }}
+                                >
+                                  {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                                </div>
                               </td>
                               {arraySum.map(val => {
                                 if (val.id === str.id) {
@@ -180,8 +209,8 @@ export function Matrix() {
                                         id={str.id}
                                         key={cuid()}
                                         className="td-sum"
-                                        onMouseOver={showPercentagesOfNumbers}
-                                        onMouseOut={hidePercentagesOfNumbers}
+                                        onMouseEnter={showPercentagesOfNumbers}
+                                        onMouseLeave={hidePercentagesOfNumbers}
                                       >
                                         {val.amount}
                                       </td>
@@ -204,7 +233,13 @@ export function Matrix() {
                               id={val.id}
                               key={val.id}
                               className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
-                              {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                              <div
+                                style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
+                                  backgroundColor: "#18ffff", padding: "5px", borderRadius: "5px 0 0 5px", width: `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%`
+                                } : { padding: "5px" }}
+                              >
+                                {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
+                              </div>
                             </td>
                           );
                         }

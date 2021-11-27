@@ -6,11 +6,9 @@ import { initializeParameters } from '../matrixSlice';
 
 
 export function Form() {
-    // const arrayValue = useAppSelector(selectArrayValue);
-    // const arraySum = useAppSelector(selectArraySum);
-    // const arrayAverage = useAppSelector(selectArrayAverage);
+
     const dispatch = useAppDispatch();
-    // const [arrayStrings, setArrayStrings] = useState<ArrayStrings[]>([]);
+
     const [paramM, setParamM] = useState<string>('');
     const [paramN, setParamN] = useState<string>('');
     const [paramX, setParamX] = useState<string>('');
@@ -32,13 +30,13 @@ export function Form() {
     return (
         <div>
             <form >
-                <label htmlFor="Mname">Param M:</label><br />
+                <label htmlFor="Mname">Рядки (M):</label><br />
                 <input type="text" id="m" name="Mname" value={paramM} onChange={(event) => setParamM(event.target.value)} /><br />
-                <label htmlFor="Nname">Param N:</label><br />
+                <label htmlFor="Nname">Стовпці (N):</label><br />
                 <input type="text" id="n" name="Nname" value={paramN} onChange={(event) => setParamN(event.target.value)} /><br />
-                <label htmlFor="Xname">Param X:</label><br />
+                <label htmlFor="Xname">Кількість найближчих чисел (X):</label><br />
                 <input type="text" id="x" name="Xname" value={paramX} onChange={(event) => setParamX(event.target.value)} /><br /><br />
-                <button type="button" onClick={addParams}>Add params</button>
+                <button type="button" onClick={addParams}>Додати параметри</button>
             </form>
 
         </div >

@@ -1,10 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import cuid from 'cuid';
 
 import { MatrixState } from '../../app/interface/interfaceMatrixState';
-//import { ArrayStrings } from '../../app/interface/interfaceArrayStrings';
-//import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
 import { Value } from '../../app/interface/interfaceValue';
 import { Params } from '../../app/interface/interfaceParams';
 
@@ -271,9 +269,11 @@ export const matrixSlice = createSlice({
 
         //arrayNumbers.forEach(val => console.log(val.amount));
         state.arrayOfNearestNumbers = [...arrayNumbers];
-
       }
 
+    },
+    reseteArrayOfNearestNumbers: (state) => {
+      state.arrayOfNearestNumbers.length = 0;
     },
     getThePercentagesOfStringNumbers: (state, action: PayloadAction<string>) => {
       const sumStr = state.arraySum.find(str => str.id === action.payload);
@@ -319,7 +319,8 @@ export const {
   addStr,
   findClosestValues,
   getThePercentagesOfStringNumbers,
-  reseteThePercentagesOfStringNumbers
+  reseteThePercentagesOfStringNumbers,
+  reseteArrayOfNearestNumbers
 } = matrixSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
