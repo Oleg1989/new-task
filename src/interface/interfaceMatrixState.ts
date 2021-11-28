@@ -5,19 +5,19 @@ import { Value } from "./interfaceValue";
 
 export interface MatrixState {
     M: number;
-    statusM: 'idle' | 'loading' | 'failed';
+    statusM: 'idle' | 'added' | 'changed';
     N: number;
-    statusN: 'idle' | 'loading' | 'failed';
+    statusN: 'idle' | 'added';
     X: number;
-    statusX: 'idle' | 'loading' | 'failed';
+    statusX: 'idle' | 'added';
     arrayValue: ArrayStrings[];
-    statusArrayValue: 'idle' | 'loading' | 'failed';
+    statusArrayValue: 'idle' | 'added' | 'changed';
     arraySum: ArraySumValue[];
-    statusArraySum: 'idle' | 'loading' | 'failed';
+    statusArraySum: 'idle' | 'added' | 'changed';
     arrayAverage: number[];
-    statusArrayAverage: 'idle' | 'loading' | 'failed';
+    statusArrayAverage: 'idle' | 'added' | 'changed';
     arrayOfPercentagesOfNumbers: ArrayOfPercentagesOfNumbers;
-    statusArrayOfPercentagesOfNumbers: 'idle' | 'loading' | 'failed';
+    statusArrayOfPercentagesOfNumbers: 'idle' | 'added' | 'resete';
     arrayOfNearestNumbers: Value[];
-    statusArrayOfNearestNumbers: 'idle' | 'loading' | 'failed';
+    statusArrayOfNearestNumbers: 'idle' | 'added' | 'resete';
 }

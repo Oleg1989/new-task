@@ -2,8 +2,6 @@ import React from 'react';
 import cuid from 'cuid';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-// import { ArrayStrings } from '../../app/interface/interfaceArrayStrings';
-// import { Value } from '../../app/interface/interfaceValue';
 import {
   selectM,
   selectN,
@@ -21,9 +19,7 @@ import {
   reseteThePercentagesOfStringNumbers,
   reseteArrayOfNearestNumbers
 } from './matrixSlice';
-// import { ArraySumValue } from '../../app/interface/interfaceArraySumValue';
 import { Form } from '../../features/matrix/form/Form';
-//simport styles from './Matrix.module.css';
 
 export function Matrix() {
   const M = useAppSelector(selectM);
@@ -36,16 +32,15 @@ export function Matrix() {
   const arrayOfPercentagesOfNumbers = useAppSelector(selectArrayOfPercentagesOfNumbers);
 
   const dispatch = useAppDispatch();
-  // const [arrayStrings, setArrayStrings] = useState<ArrayStrings[]>([]);
-  // const [arrayValue, setArrayValue] = useState<Value[]>([]);
 
-
-  const clikValue = (event: React.MouseEvent<HTMLElement>) => {
+  const clikValue: React.MouseEventHandler<HTMLElement> = (event) => {
     if ((event.target as HTMLElement).id) {
       dispatch(increment((event.target as HTMLElement).id));
+      dispatch(findClosestValues((event.target as HTMLElement).id))
     }
     if ((event.target as HTMLElement).parentElement?.id) {
       dispatch(increment((event.target as HTMLElement).parentElement?.id!));
+      dispatch(findClosestValues((event.target as HTMLElement).parentElement?.id!))
     }
   }
 
@@ -92,26 +87,22 @@ export function Matrix() {
             <caption>Матриця чисел - <br />(Рядки (M): {M}; <br />Колонки (N): {N}; <br />Кількість найближчих чисел (X): {X})</caption>
             <thead>
             </thead>
-            <tbody onClick={(event) => {
-              clikValue(event);
-            }}
+            <tbody
+              onClick={clikValue}
               onMouseOver={showNearestNumbers}
               onMouseLeave={hideNearestNumbers}
             >
               {arrayValue.map((str, index) => {
                 if (index === M - 1) {
                   return (
-                    <>
-                      <tr
-                        key={str.id}
-                      >
+                    <React.Fragment key={index}>
+                      <tr>
                         {str.string.map((val, index) => {
                           if (index === N - 1) {
                             return (
-                              <>
+                              <React.Fragment key={index}>
                                 <td
                                   id={val.id}
-                                  key={val.id}
                                   className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
                                   <div
                                     style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
@@ -121,13 +112,12 @@ export function Matrix() {
                                     {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                                   </div>
                                 </td>
-                                {arraySum.map(val => {
+                                {arraySum.map((val, index) => {
                                   if (val.id === str.id) {
                                     return (
-                                      <>
+                                      <React.Fragment key={index}>
                                         <td
                                           id={str.id}
-                                          key={cuid()}
                                           className="td-sum"
                                           onMouseEnter={showPercentagesOfNumbers}
                                           onMouseLeave={hidePercentagesOfNumbers}
@@ -141,18 +131,18 @@ export function Matrix() {
                                           onClick={deleteString}>
                                           Delete
                                         </td>
-                                      </>
+                                      </React.Fragment>
                                     );
                                   }
-                                  return <></>;
+                                  return <React.Fragment key={index}></React.Fragment>;
                                 })}
-                              </>
+                              </React.Fragment>
                             );
                           } else {
                             return (
                               <td
                                 id={val.id}
-                                key={val.id}
+                                key={index}
                                 className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
                                 <div
                                   style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
@@ -166,32 +156,30 @@ export function Matrix() {
                           }
                         })}
                       </tr>
-                      <tr
-                        key={cuid()}>
-                        {arrayAverage.map(val => {
+                      <tr>
+                        {arrayAverage.map((val, index) => {
                           return (
                             <td
-                              key={cuid()}
+                              key={index}
                               className="td-average">
                               {val}
                             </td>
                           );
                         })}
                       </tr>
-                    </>
+                    </React.Fragment>
                   );
                 } else {
                   return (
                     <tr
-                      key={str.id}
+                      key={index}
                     >
                       {str.string.map((val, index) => {
                         if (index === N - 1) {
                           return (
-                            <>
+                            <React.Fragment key={index}>
                               <td
                                 id={val.id}
-                                key={val.id}
                                 className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
                                 <div
                                   style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {
@@ -201,13 +189,12 @@ export function Matrix() {
                                   {arrayOfPercentagesOfNumbers.string.length && arrayOfPercentagesOfNumbers.id === str.id ? `${arrayOfPercentagesOfNumbers.string.find(a => a.id === val.id)?.amount!}%` : val.amount}
                                 </div>
                               </td>
-                              {arraySum.map(val => {
+                              {arraySum.map((val, index) => {
                                 if (val.id === str.id) {
                                   return (
-                                    <>
+                                    <React.Fragment key={index}>
                                       <td
                                         id={str.id}
-                                        key={cuid()}
                                         className="td-sum"
                                         onMouseEnter={showPercentagesOfNumbers}
                                         onMouseLeave={hidePercentagesOfNumbers}
@@ -215,23 +202,22 @@ export function Matrix() {
                                         {val.amount}
                                       </td>
                                       <td
-                                        key={cuid()}
                                         data-deleteid={str.id}
                                         className="delete-button" onClick={deleteString}>
                                         Delete
                                       </td>
-                                    </>
+                                    </React.Fragment>
                                   );
                                 }
-                                return <></>;
+                                return <React.Fragment key={index}></React.Fragment>;
                               })}
-                            </>
+                            </React.Fragment>
                           );
                         } else {
                           return (
                             <td
                               id={val.id}
-                              key={val.id}
+                              key={index}
                               className={arrayOfNearestNumbers.find(num => val.id === num.id) ? "td-show-numbers" : "td"}>
                               <div
                                 style={arrayOfPercentagesOfNumbers.string.find(num => val.id === num.id) ? {

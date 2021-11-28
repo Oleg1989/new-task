@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import cuid from 'cuid';
 
-import { MatrixState } from '../../app/interface/interfaceMatrixState';
-import { Value } from '../../app/interface/interfaceValue';
-import { Params } from '../../app/interface/interfaceParams';
+import { MatrixState } from '../../interface/interfaceMatrixState';
+import { Value } from '../../interface/interfaceValue';
+import { Params } from '../../interface/interfaceParams';
 
 const initialState: MatrixState = {
   M: 0,
@@ -28,9 +28,9 @@ const initialState: MatrixState = {
 export const matrixSlice = createSlice({
   name: 'matrix',
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     increment: (state, action: PayloadAction<string>) => {
+
       state.arrayValue.forEach(str => {
         str.string.forEach(val => {
           if (val.id === action.payload) {
@@ -38,6 +38,7 @@ export const matrixSlice = createSlice({
           }
         });
       });
+      state.statusArrayValue = 'changed';
 
       state.arrayValue.forEach(str => {
         str.string.forEach(val => {
@@ -50,6 +51,7 @@ export const matrixSlice = createSlice({
           }
         });
       });
+      state.statusArraySum = 'changed';
 
       let arr: number[] = [];
       state.arrayValue.forEach((str, index) => {
@@ -66,11 +68,15 @@ export const matrixSlice = createSlice({
       arr.forEach((val, index) => {
         state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
       });
+      state.statusArrayAverage = 'changed';
     },
     initializeParameters: (state, action: PayloadAction<Params>) => {
       state.M = action.payload.M;
       state.N = action.payload.N;
       state.X = action.payload.X;
+      state.statusM = 'added';
+      state.statusN = 'added';
+      state.statusX = 'added';
 
       state.arrayValue.length = 0;
       state.arrayAverage.length = 0;
@@ -89,6 +95,7 @@ export const matrixSlice = createSlice({
           string: arrayAmount,
         });
       }
+      state.statusArrayValue = 'added';
 
       state.arrayValue.forEach(str => {
         let sum: number = 0;
@@ -98,6 +105,7 @@ export const matrixSlice = createSlice({
           amount: sum
         });
       });
+      state.statusArraySum = 'added';
 
       let arr: number[] = [];
       state.arrayValue.forEach((str, index) => {
@@ -114,10 +122,13 @@ export const matrixSlice = createSlice({
       arr.forEach(val => {
         state.arrayAverage.push(parseFloat((val / state.M).toFixed(1)));
       });
+      state.statusArrayAverage = 'added';
     },
     deleteStr: (state, action: PayloadAction<string>) => {
       state.arrayValue = [...state.arrayValue.filter(str => str.id !== action.payload)];
+      state.statusArraySum = 'changed';
       state.M = state.M - 1;
+      state.statusM = 'changed';
 
       let arr: number[] = [];
       state.arrayValue.forEach((str, index) => {
@@ -134,9 +145,11 @@ export const matrixSlice = createSlice({
       arr.forEach((val, index) => {
         state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
       });
+      state.statusArrayAverage = 'changed';
     },
     addStr: (state) => {
       state.M = state.M + 1;
+      state.statusM = 'changed';
 
       let newString: Value[] = [];
       for (let i = 0; i < state.N; i++) {
@@ -149,6 +162,7 @@ export const matrixSlice = createSlice({
         id: cuid(),
         string: newString,
       });
+      state.statusArrayValue = 'changed';
 
       state.arraySum.length = 0;
       state.arrayValue.forEach(str => {
@@ -159,6 +173,7 @@ export const matrixSlice = createSlice({
           amount: sum
         });
       });
+      state.statusArraySum = 'changed';
 
       let arr: number[] = [];
       state.arrayValue.forEach((str, index) => {
@@ -175,6 +190,7 @@ export const matrixSlice = createSlice({
       arr.forEach((val, index) => {
         state.arrayAverage[index] = parseFloat((val / state.M).toFixed(1));
       });
+      state.statusArrayAverage = 'changed';
     },
     findClosestValues: (state, action: PayloadAction<string>) => {
       state.arrayOfNearestNumbers.length = 0;
@@ -187,7 +203,6 @@ export const matrixSlice = createSlice({
           }
         });
       });
-      //console.log(number);
       if (number) {
         let newArrayValue: Value[] = [];
         state.arrayValue.forEach(str => {
@@ -213,14 +228,6 @@ export const matrixSlice = createSlice({
           if ((number.amount > val.amount)) {
             arraySmallerNumbers.push(val);
           }
-          // if ((number.amount > val.amount) && (arraySmallerNumbers.length === state.X)) {
-          //   arraySmallerNumbers.map(num => {
-          //     if (num.amount < val.amount) {
-          //       console.log("Ok");
-          //       return num = { ...val };
-          //     }
-          //   });
-          // }
           if (number.amount < val.amount && arrayLargerNumbers.length <= state.X) {
             if (arrayLargerNumbers.length < state.X) {
               arrayLargerNumbers.push(val);
@@ -228,21 +235,13 @@ export const matrixSlice = createSlice({
           }
         });
 
-        // arraySmallerNumbers.forEach(val => console.log(val.amount));
-        // arrayLargerNumbers.forEach(val => console.log(val.amount));
-        // arrayDuplicate.forEach(val => console.log(val.amount));
         arraySmallerNumbers.reverse();
         arraySmallerNumbers = arraySmallerNumbers.slice(0, state.X);
-        // arraySmallerNumbers.forEach(val => console.log(val.amount));
-        // arrayLargerNumbers.forEach(val => console.log(val.amount));
-
 
         let arrayNumbers: Value[] = [];
         if (arrayDuplicate.length) {
           arrayNumbers = arrayDuplicate.map(val => val);
         }
-
-        //arrayNumbers.forEach(val => console.log(val.amount));
 
         if (arrayNumbers.length < state.X) {
           for (let i = 0; i < state.X; i++) {
@@ -267,13 +266,14 @@ export const matrixSlice = createSlice({
           }
         }
 
-        //arrayNumbers.forEach(val => console.log(val.amount));
         state.arrayOfNearestNumbers = [...arrayNumbers];
+        state.statusArrayOfNearestNumbers = 'added';
       }
 
     },
     reseteArrayOfNearestNumbers: (state) => {
       state.arrayOfNearestNumbers.length = 0;
+      state.statusArrayOfNearestNumbers = 'resete';
     },
     getThePercentagesOfStringNumbers: (state, action: PayloadAction<string>) => {
       const sumStr = state.arraySum.find(str => str.id === action.payload);
@@ -292,24 +292,15 @@ export const matrixSlice = createSlice({
           });
         }
       });
+      state.statusArrayOfPercentagesOfNumbers = 'added';
     },
     reseteThePercentagesOfStringNumbers: (state) => {
       state.arrayOfPercentagesOfNumbers = { id: '', string: [] };
+      state.statusArrayOfPercentagesOfNumbers = 'resete';
     }
 
   },
-  // The `extraReducers` field lets the slice handle actions defined elsewhere,
-  // including actions generated by createAsyncThunk or in other slices.
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(incrementAsync.pending, (state) => {
-  //       state.status = 'loading';
-  //     })
-  //     .addCase(incrementAsync.fulfilled, (state, action) => {
-  //       state.status = 'idle';
-  //       state.value += action.payload;
-  //     });
-  // },
+
 });
 
 export const {
@@ -322,11 +313,6 @@ export const {
   reseteThePercentagesOfStringNumbers,
   reseteArrayOfNearestNumbers
 } = matrixSlice.actions;
-
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-//export const selectMatrix = (state: RootState) => state.matrix.value;
 
 export const selectM = (state: RootState) => state.matrix.M;
 export const selectN = (state: RootState) => state.matrix.N;

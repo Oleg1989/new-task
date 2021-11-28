@@ -5,8 +5,9 @@
 /* Стилі для таблиці */
 table {
    width: 95vw;
-   border: 2px solid #00bcd4;
+   border: 5px solid #00bcd4;
    margin: 2rem auto;
+   padding: 5px;
    border-radius: 5px;
    border-collapse: separate;
    border-spacing: 5px;
@@ -30,8 +31,9 @@ td {
   padding: 0;
 }
 .td:hover {
-  background-color:#ff1744;
+  background-color: #795548;
   height: 20px;
+  color: white;
 }
 .td-sum {
   background-color: #b2ebf2 ;
@@ -44,6 +46,7 @@ td {
 }
 .td-average {
   background-color: #76ff03;
+  padding: 5px;
 }
 .delete-button {
   background-color: #ffab91 ;
@@ -56,6 +59,7 @@ td {
 }
 .td-show-numbers {
   background-color: #f06292;
+  color: white;
 }
 div, span {
   cursor: pointer;
